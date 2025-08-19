@@ -1,9 +1,11 @@
-package com.zherikhov.planningpoker.infrastructure.persistence.jpa;
+package com.zherikhov.planningpoker.infrastructure.persistence.service;
 
 import com.zherikhov.planningpoker.domain.rooms.Room;
 import com.zherikhov.planningpoker.domain.rooms.RoomId;
 import com.zherikhov.planningpoker.domain.rooms.RoomRepository;
 import com.zherikhov.planningpoker.domain.rooms.RoomStatus;
+import com.zherikhov.planningpoker.infrastructure.persistence.dao.RoomJpaRepository;
+import com.zherikhov.planningpoker.infrastructure.persistence.entity.RoomEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
