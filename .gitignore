@@ -37,3 +37,7 @@ target
 
 # other
 *.secure.properties
+
+# Node modules
+node_modules/
+**/node_modules/
