@@ -1,35 +1,32 @@
 package com.zherikhov.planningpoker.api.rooms;
 
-import com.zherikhov.planningpoker.application.rooms.CreateRoomService;
-import com.zherikhov.planningpoker.domain.rooms.Room;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import com.zherikhov.planningpoker.application.rooms.RoomService;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/rooms")
 public class RoomController {
 
-    private final CreateRoomService createRoomService;
+    private final RoomService roomService;
 
-    public RoomController(CreateRoomService createRoomService) {
-        this.createRoomService = createRoomService;
-    }
-
-    @PostMapping
-    public ResponseEntity<RoomDto> createRoom(@RequestBody RoomDto request) {
-        Room room = createRoomService.createRoom(request.name());
-        return ResponseEntity.ok(new RoomDto(room.id().value(), room.name(), room.status().name()));
+    public RoomController(RoomService roomService) {
+        this.roomService = roomService;
     }
 
     @GetMapping
-    public ResponseEntity<List<RoomDto>> getRooms() {
-        // In a real implementation, this would return all rooms from repository.
-        return ResponseEntity.ok(List.of());
+    public Page<RoomSummaryDto> getRooms(@RequestParam(defaultValue = "false") boolean mine,
+                                         Pageable pageable) {
+        return roomService.getRooms(mine, pageable);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public CreateRoomResponse createRoom(@Valid @RequestBody CreateRoomRequest request) {
+        return roomService.createRoom(request);
     }
 }
+
