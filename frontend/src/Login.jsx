@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { login } from './auth.js'
+import { navigate } from './router.js'
 
 // Login page component with email/password form
 export default function Login() {
@@ -34,6 +36,9 @@ export default function Login() {
   }
   const lang = navigator.language.startsWith('ru') ? 'ru' : 'en'
   const t = messages[lang]
+  useEffect(() => {
+    document.title = 'Login · Planning Poker'
+  }, [])
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -60,7 +65,7 @@ export default function Login() {
     return errs
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = e => {
     e.preventDefault()
     const errs = validate()
     if (Object.keys(errs).length) {
@@ -69,35 +74,11 @@ export default function Login() {
     }
     setLoading(true)
     setErrors({})
-    setAlert('')
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), password, rememberMe: remember }),
-        credentials: 'include'
-      })
-      if (res.ok) {
-        const data = await res.json()
-        const storage = remember ? localStorage : sessionStorage
-        storage.setItem('accessToken', data.accessToken)
-        window.location.assign('/')
-      } else {
-        const data = await res.json().catch(() => ({}))
-        if (res.status === 401) {
-          setAlert(t.errorInvalid)
-        } else if (res.status === 423) {
-          setAlert(t.errorLocked)
-        } else {
-          setAlert(data.message || 'Error')
-        }
-        setErrors({ email: true, password: true })
-      }
-    } catch (err) {
-      setAlert('Network error')
-    } finally {
-      setLoading(false)
-    }
+    const params = new URLSearchParams(window.location.search)
+    const redirect = params.get('redirectTo') || '/boards'
+    login(remember)
+    setLoading(false)
+    navigate(redirect, { replace: true })
   }
 
   return (
