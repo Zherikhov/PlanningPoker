@@ -1,11 +1,20 @@
 package com.zherikhov.planningpoker.api.auth;
 
+import com.zherikhov.planningpoker.api.auth.EmailAlreadyExistsException;
+import com.zherikhov.planningpoker.api.auth.UserResponse;
+import com.zherikhov.planningpoker.application.auth.RegistrationService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.UUID;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -15,8 +24,13 @@ class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @MockBean
+    private RegistrationService registrationService;
+
     @Test
     void register_ReturnsCreatedUser() throws Exception {
+        when(registrationService.register(any())).thenReturn(new UserResponse(UUID.randomUUID(), "new@example.com", "Vlad"));
+
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"new@example.com\",\"password\":\"Secret123\",\"displayName\":\"Vlad\"}"))
@@ -27,6 +41,9 @@ class AuthControllerTest {
 
     @Test
     void register_DuplicateEmail_ReturnsConflict() throws Exception {
+        Mockito.when(registrationService.register(any()))
+                .thenThrow(new EmailAlreadyExistsException("user@example.com"));
+
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"user@example.com\",\"password\":\"Secret123\",\"displayName\":\"Vlad\"}"))
