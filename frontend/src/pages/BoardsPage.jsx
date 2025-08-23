@@ -13,6 +13,10 @@ export default function BoardsPage() {
   })
 
   useEffect(() => {
+    document.title = 'Boards · Planning Poker'
+  }, [])
+
+  useEffect(() => {
     fetch('/api/rooms?mine=true')
       .then(res => res.json())
       .then(data => {
