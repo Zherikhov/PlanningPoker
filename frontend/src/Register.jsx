@@ -37,6 +37,7 @@ export default function Register() {
   const [errors, setErrors] = useState({})
   const [alert, setAlert] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleSubmit = async e => {
     e.preventDefault()
@@ -51,7 +52,7 @@ export default function Register() {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ displayName: name, email, password })
+        body: JSON.stringify({ displayName: name.trim(), email: email.trim().toLowerCase(), password })
       })
       if (res.status === 201) {
         navigate('/login?registered=1', { replace: true })
@@ -91,7 +92,12 @@ export default function Register() {
           {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
 
           <label htmlFor="password" className="block text-sm mt-4 mb-1">{t.password}</label>
-          <input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} className={`w-full p-2 rounded border ${errors.password ? 'border-red-500' : 'border-gray-600'} bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500`} aria-invalid={errors.password ? 'true' : 'false'} autoComplete="new-password" disabled={loading} />
+          <div className="relative">
+            <input id="password" type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} className={`w-full p-2 pr-10 rounded border ${errors.password ? 'border-red-500' : 'border-gray-600'} bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500`} aria-invalid={errors.password ? 'true' : 'false'} autoComplete="new-password" disabled={loading} />
+            <button type="button" onClick={() => setShowPassword(s => !s)} className="absolute inset-y-0 right-0 px-3 text-sm" aria-pressed={showPassword} tabIndex={0}>
+              {showPassword ? '🙈' : '👁️'}
+            </button>
+          </div>
           {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
 
           <button type="submit" className="mt-6 w-full py-2 rounded bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 focus:ring-2 focus:ring-blue-400" disabled={loading || Object.keys(validateRegister({ name, email, password })).length > 0}>{loading ? '...' : t.submit}</button>

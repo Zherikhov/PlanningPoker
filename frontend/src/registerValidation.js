@@ -2,10 +2,12 @@ const emailRegex = /^(?:[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+(?:\.[a-zA-Z0-9_!#$%&'*+/
 
 export function validateRegister({ name, email, password }) {
   const errors = {}
-  if (!name || name.trim().length < 2 || name.trim().length > 60) {
+  const trimmedName = name ? name.trim() : ''
+  const trimmedEmail = email ? email.trim().toLowerCase() : ''
+  if (!trimmedName || trimmedName.length < 2 || trimmedName.length > 60) {
     errors.name = 'invalid'
   }
-  if (!email || !emailRegex.test(email)) {
+  if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
     errors.email = 'invalid'
   }
   if (!password || password.length < 8) {
