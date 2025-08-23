@@ -1,8 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { usePath, navigate } from './router.js'
-import { ensureAuth } from './auth.js'
+import { ensureAuth, isAuthenticated } from './auth.js'
 import Login from './Login.jsx'
+import Register from './Register.jsx'
 import Boards from './pages/Boards.jsx'
 import Board from './pages/Board.jsx'
 import Settings from './pages/Settings.jsx'
@@ -11,8 +12,12 @@ import './index.css'
 
 function AppRouter() {
   const path = usePath()
-  if (path === '/login') {
-    return <Login />
+  if (path === '/login' || path === '/register') {
+    if (isAuthenticated()) {
+      navigate('/boards', { replace: true })
+      return null
+    }
+    return path === '/login' ? <Login /> : <Register />
   }
   const redirect = ensureAuth(path)
   if (redirect) {

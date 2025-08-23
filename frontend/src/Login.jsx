@@ -12,6 +12,7 @@ export default function Login() {
       remember: 'Remember me',
       forgot: 'Forgot password?',
       signin: 'Sign in',
+      register: 'Register',
       errorInvalid: 'Email or password is incorrect',
       errorLocked: 'Account is locked',
       emailRequired: 'Email is required',
@@ -26,6 +27,7 @@ export default function Login() {
       remember: 'Запомнить меня',
       forgot: 'Забыли пароль?',
       signin: 'Войти',
+      register: 'Регистрация',
       errorInvalid: 'Неверный email или пароль',
       errorLocked: 'Учетная запись заблокирована',
       emailRequired: 'Введите email',
@@ -158,6 +160,14 @@ export default function Login() {
             disabled={loading || Object.keys(validate()).length > 0}
           >
             {loading ? '...' : t.signin}
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/register')}
+            className="mt-2 w-full py-2 rounded border border-gray-600 hover:bg-gray-700 disabled:opacity-50"
+            disabled={loading}
+          >
+            {t.register}
           </button>
         </form>
       </div>

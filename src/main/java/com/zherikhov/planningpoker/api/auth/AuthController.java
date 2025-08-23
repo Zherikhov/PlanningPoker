@@ -3,6 +3,10 @@ package com.zherikhov.planningpoker.api.auth;
 import com.zherikhov.planningpoker.infrastructure.security.JwtProvider;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +54,17 @@ public class AuthController {
                 ));
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+        String email = request.email().trim().toLowerCase();
+        if (DEMO_EMAIL.equals(email)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "EMAIL_EXISTS", "message", "Email already registered"));
+        }
+        UserDto user = new UserDto(java.util.UUID.randomUUID().toString(), email, request.displayName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
+
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@CookieValue(value = "refreshToken", required = false) String refreshToken) {
         if (refreshToken == null) {
@@ -87,4 +102,9 @@ public class AuthController {
     public record LoginRequest(String email, String password, boolean rememberMe) {}
     public record UserDto(String id, String email, String displayName) {}
     public record LoginResponse(String accessToken, int expiresIn, UserDto user) {}
+    public record RegisterRequest(
+            @Email @NotBlank String email,
+            @NotBlank @Size(min = 8) String password,
+            @NotBlank @Size(min = 2, max = 60) String displayName
+    ) {}
 }
