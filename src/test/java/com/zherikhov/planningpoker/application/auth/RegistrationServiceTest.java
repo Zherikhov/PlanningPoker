@@ -3,12 +3,13 @@ package com.zherikhov.planningpoker.application.auth;
 import com.zherikhov.planningpoker.api.auth.EmailAlreadyExistsException;
 import com.zherikhov.planningpoker.api.auth.RegisterRequest;
 import com.zherikhov.planningpoker.api.auth.UserResponse;
-import com.zherikhov.planningpoker.domain.users.AppUserEntity;
-import com.zherikhov.planningpoker.domain.users.AppUserJpaRepository;
+import com.zherikhov.planningpoker.infrastructure.persistence.entity.AppUserEntity;
+import com.zherikhov.planningpoker.infrastructure.persistence.dao.AppUserJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.util.UUID;
+import java.time.OffsetDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -23,7 +24,14 @@ class RegistrationServiceTest {
     void register_okFlow() {
         when(repository.existsByEmailIgnoreCase("new@example.com")).thenReturn(false);
         ArgumentCaptor<AppUserEntity> captor = ArgumentCaptor.forClass(AppUserEntity.class);
-        AppUserEntity saved = new AppUserEntity(UUID.randomUUID(), "new@example.com", "hash", "Vlad");
+        AppUserEntity saved = new AppUserEntity();
+        saved.setId(UUID.randomUUID().toString());
+        saved.setEmail("new@example.com");
+        saved.setPasswordHash("hash");
+        saved.setDisplayName("Vlad");
+        saved.setRole("USER");
+        saved.setCreatedAt(OffsetDateTime.now());
+        saved.setUpdatedAt(saved.getCreatedAt());
         when(repository.save(captor.capture())).thenReturn(saved);
 
         UserResponse res = service.register(new RegisterRequest("new@example.com", "Secret123", "Vlad"));
