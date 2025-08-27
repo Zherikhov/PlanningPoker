@@ -18,3 +18,8 @@ Planning Poker is a web-based tool for agile teams to estimate the effort of use
 - Mobile-friendly interface and optional voice commands for quick voting.
 
 This repository contains the backend implementation built with Java and Spring Boot. See `src/` for source code and the `backend` module for service configuration.
+
+## Authentication
+
+- `POST /api/auth/login` issues an access token and optional refresh cookie.
+- `POST /api/auth/logout` clears the refresh token cookie and should be called when the user signs out.
