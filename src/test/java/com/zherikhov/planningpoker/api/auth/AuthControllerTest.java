@@ -3,16 +3,19 @@ package com.zherikhov.planningpoker.api.auth;
 import com.zherikhov.planningpoker.api.auth.EmailAlreadyExistsException;
 import com.zherikhov.planningpoker.api.auth.UserResponse;
 import com.zherikhov.planningpoker.application.auth.RegistrationService;
+import com.zherikhov.planningpoker.infrastructure.security.JwtProvider;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -26,6 +29,9 @@ class AuthControllerTest {
 
     @MockBean
     private RegistrationService registrationService;
+
+    @MockBean
+    private JwtProvider jwtProvider;
 
     @Test
     void register_ReturnsCreatedUser() throws Exception {
@@ -58,5 +64,13 @@ class AuthControllerTest {
                         .content("{\"email\":\"bad\",\"password\":\"123\",\"displayName\":\"V\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("VALIDATION_ERROR"));
+    }
+
+    @Test
+    void logout_ClearsRefreshCookie() throws Exception {
+        mockMvc.perform(post("/api/auth/logout"))
+                .andExpect(status().isNoContent())
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("Max-Age=0")))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("refreshToken=")));
     }
 }

@@ -25,9 +25,23 @@ export function login(remember = false) {
   storage.setItem('auth', 'true')
 }
 
-export function logout() {
-  localStorage.removeItem('auth')
-  sessionStorage.removeItem('auth')
+export async function logout() {
+  let error = null
+  try {
+    const res = await fetch('/api/auth/logout', {
+      method: 'POST',
+      credentials: 'include'
+    })
+    if (!res.ok && res.status !== 401) {
+      error = new Error('logout failed')
+    }
+  } catch (e) {
+    error = e
+  } finally {
+    localStorage.removeItem('auth')
+    sessionStorage.removeItem('auth')
+  }
+  if (error) throw error
 }
 
 export function isAuthenticated() {

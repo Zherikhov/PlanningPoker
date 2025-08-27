@@ -4,12 +4,12 @@ import com.zherikhov.planningpoker.infrastructure.security.JwtProvider;
 import com.zherikhov.planningpoker.application.auth.RegistrationService;
 import com.zherikhov.planningpoker.api.auth.UserResponse;
 import com.zherikhov.planningpoker.api.auth.RegisterRequest;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseCookie;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -74,11 +74,15 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("refreshToken", "");
-        cookie.setPath("/api/auth/refresh");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
-        return ResponseEntity.ok().build();
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/api/auth/refresh")
+                .maxAge(0)
+                .sameSite("Lax")
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/me")
