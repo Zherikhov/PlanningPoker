@@ -4,6 +4,7 @@ import com.zherikhov.planningpoker.infrastructure.security.JwtProvider;
 import com.zherikhov.planningpoker.application.auth.RegistrationService;
 import com.zherikhov.planningpoker.api.auth.UserResponse;
 import com.zherikhov.planningpoker.api.auth.RegisterRequest;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
