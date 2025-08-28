@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { login } from './auth.js'
+import { useState, useEffect, useRef } from 'react'
+import { loginUser } from './auth.js'
 import { navigate } from './router.js'
 
 // Login page component with email/password form
@@ -15,6 +15,8 @@ export default function Login() {
       register: 'Register',
       errorInvalid: 'Email or password is incorrect',
       errorLocked: 'Account is locked',
+      errorGeneric: 'Login failed. Please try again',
+      errorNetwork: 'Cannot reach server',
       emailRequired: 'Email is required',
       emailInvalid: 'Invalid email format',
       passwordRequired: 'Password is required',
@@ -30,6 +32,8 @@ export default function Login() {
       register: 'Регистрация',
       errorInvalid: 'Неверный email или пароль',
       errorLocked: 'Учетная запись заблокирована',
+      errorGeneric: 'Ошибка входа. Повторите попытку',
+      errorNetwork: 'Нет связи с сервером',
       emailRequired: 'Введите email',
       emailInvalid: 'Неверный формат email',
       passwordRequired: 'Введите пароль',
@@ -49,6 +53,7 @@ export default function Login() {
   const [errors, setErrors] = useState({})
   const [alert, setAlert] = useState('')
   const [loading, setLoading] = useState(false)
+  const emailRef = useRef(null)
 
   const emailRegex = /^(?:[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+(?:\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*|"(?:["]|\\")+")@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/
 
@@ -67,7 +72,13 @@ export default function Login() {
     return errs
   }
 
-  const handleSubmit = e => {
+  const mapApiError = (err) => {
+    if (err?.error === 'INVALID_CREDENTIALS') return t.errorInvalid
+    if (err?.error === 'USER_LOCKED') return t.errorLocked
+    return t.errorGeneric
+  }
+
+  const handleSubmit = async e => {
     e.preventDefault()
     const errs = validate()
     if (Object.keys(errs).length) {
@@ -76,11 +87,19 @@ export default function Login() {
     }
     setLoading(true)
     setErrors({})
+    setAlert('')
     const params = new URLSearchParams(window.location.search)
     const redirect = params.get('redirectTo') || '/boards'
-    login(remember)
-    setLoading(false)
-    navigate(redirect, { replace: true })
+    try {
+      await loginUser({ email, password, remember, navigate, redirectTo: redirect })
+    } catch (err) {
+      const message = err instanceof Error ? t.errorNetwork : mapApiError(err)
+      setAlert(message)
+      setLoading(false)
+      setPassword('')
+      emailRef.current && emailRef.current.focus()
+      return
+    }
   }
 
   return (
@@ -104,6 +123,7 @@ export default function Login() {
           </label>
           <input
             id="email"
+            ref={emailRef}
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
