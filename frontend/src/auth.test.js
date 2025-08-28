@@ -8,9 +8,9 @@ test('login and isAuthenticated', async () => {
   const realFetch = globalThis.fetch
   globalThis.fetch = async () => ({ ok: true, status: 204 })
   await logout().catch(() => {})
-  assert.strictEqual(isAuthenticated(), false)
-  login()
-  assert.strictEqual(isAuthenticated(), true)
+  assert.strictEqual(await isAuthenticated(), false)
+  login('t', 60)
+  assert.strictEqual(await isAuthenticated(), true)
   globalThis.fetch = realFetch
 })
 
@@ -18,16 +18,16 @@ test('ensureAuth builds redirect path', async () => {
   const realFetch = globalThis.fetch
   globalThis.fetch = async () => ({ ok: true, status: 204 })
   await logout().catch(() => {})
-  const redirect = ensureAuth('/boards')
+  const redirect = await ensureAuth('/boards')
   assert.strictEqual(redirect, '/login?redirectTo=%2Fboards')
   globalThis.fetch = realFetch
 })
 
 test('logout clears auth even on failure', async () => {
-  login()
+  login('t', 60)
   const realFetch = globalThis.fetch
   globalThis.fetch = async () => { throw new Error('net') }
   await logout().catch(() => {})
-  assert.strictEqual(isAuthenticated(), false)
+  assert.strictEqual(await isAuthenticated(), false)
   globalThis.fetch = realFetch
 })
