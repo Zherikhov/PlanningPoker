@@ -91,7 +91,8 @@ export default function Login() {
     const params = new URLSearchParams(window.location.search)
     const redirect = params.get('redirectTo') || '/boards'
     try {
-      await loginUser({ email, password, remember, navigate, redirectTo: redirect })
+      await loginUser({ email, password, remember })
+      navigate(redirect)
     } catch (err) {
       const message = err instanceof Error ? t.errorNetwork : mapApiError(err)
       setAlert(message)

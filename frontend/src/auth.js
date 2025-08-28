@@ -90,7 +90,7 @@ export async function ensureAuth(targetPath) {
     : `/login?redirectTo=${encodeURIComponent(targetPath)}`
 }
 
-export async function loginUser({ email, password, remember, navigate, redirectTo }, fetchImpl = fetch) {
+export async function loginUser({ email, password, remember }, fetchImpl = fetch) {
   const res = await fetchImpl('/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -98,10 +98,10 @@ export async function loginUser({ email, password, remember, navigate, redirectT
     credentials: 'include'
   })
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ message: 'Login failed' }))
+    const err = await res.json().catch(() => ({}))
     throw err
   }
   const data = await res.json()
   login(data.accessToken, data.expiresIn, remember)
-  navigate(redirectTo || '/boards')
+  return data
 }
