@@ -2,10 +2,10 @@ package com.zherikhov.planningpoker.api.auth;
 
 import com.zherikhov.planningpoker.application.auth.AuthService;
 import com.zherikhov.planningpoker.application.auth.RegistrationService;
-import com.zherikhov.planningpoker.api.auth.UserResponse;
-import com.zherikhov.planningpoker.api.auth.RegisterRequest;
-import com.zherikhov.planningpoker.api.auth.LoginRequest;
-import com.zherikhov.planningpoker.api.auth.LoginResponse;
+import com.zherikhov.planningpoker.application.auth.UserResponse;
+import com.zherikhov.planningpoker.application.auth.RegisterRequest;
+import com.zherikhov.planningpoker.application.auth.LoginRequest;
+import com.zherikhov.planningpoker.application.auth.LoginResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -33,8 +33,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        return authService.login(request, response)
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        return authService.login(request)
                 .<ResponseEntity<?>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(Map.of(

@@ -1,8 +1,9 @@
-package com.zherikhov.planningpoker.application.auth;
+package com.zherikhov.planningpoker.infrastructure.security;
 
-import com.zherikhov.planningpoker.api.auth.EmailAlreadyExistsException;
-import com.zherikhov.planningpoker.api.auth.RegisterRequest;
-import com.zherikhov.planningpoker.api.auth.UserResponse;
+import com.zherikhov.planningpoker.application.auth.EmailAlreadyExistsException;
+import com.zherikhov.planningpoker.application.auth.RegisterRequest;
+import com.zherikhov.planningpoker.application.auth.UserResponse;
+import com.zherikhov.planningpoker.application.auth.RegistrationService;
 import com.zherikhov.planningpoker.infrastructure.persistence.entity.AppUserEntity;
 import com.zherikhov.planningpoker.infrastructure.persistence.dao.AppUserJpaRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
