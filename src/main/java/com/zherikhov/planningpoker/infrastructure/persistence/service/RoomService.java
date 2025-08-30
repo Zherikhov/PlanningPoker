@@ -1,5 +1,9 @@
 package com.zherikhov.planningpoker.infrastructure.persistence.service;
 
+import com.zherikhov.planningpoker.application.rooms.RoomQueryService;
+import com.zherikhov.planningpoker.domain.rooms.Room;
+import com.zherikhov.planningpoker.domain.rooms.RoomId;
+import com.zherikhov.planningpoker.domain.rooms.RoomStatus;
 import com.zherikhov.planningpoker.infrastructure.persistence.dao.RoomJpaRepository;
 import com.zherikhov.planningpoker.infrastructure.persistence.entity.RoomEntity;
 import org.springframework.stereotype.Service;
@@ -8,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class RoomService {
+public class RoomService implements RoomQueryService {
     private final RoomJpaRepository repository;
 
     public RoomService(RoomJpaRepository repository) {
@@ -23,8 +27,11 @@ public class RoomService {
         return repository.findById(id);
     }
 
-    public List<RoomEntity> findAll() {
-        return repository.findAll();
+    @Override
+    public List<Room> findAll() {
+        return repository.findAll().stream()
+                .map(e -> new Room(new RoomId(e.getId()), e.getName(), RoomStatus.valueOf(e.getStatus())))
+                .toList();
     }
 
     public void deleteById(String id) {
