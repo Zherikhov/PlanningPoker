@@ -1,8 +1,7 @@
 package com.zherikhov.planningpoker.application.auth;
 
-import com.zherikhov.planningpoker.api.auth.RegisterRequest;
-import com.zherikhov.planningpoker.api.auth.UserResponse;
+import com.zherikhov.planningpoker.domain.user.User;
 
 public interface RegistrationService {
-    UserResponse register(RegisterRequest req);
+    User register(String email, String displayName, String password);
 }
