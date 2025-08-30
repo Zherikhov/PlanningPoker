@@ -19,23 +19,6 @@ Planning Poker is a web-based tool for agile teams to estimate the effort of use
 
 This repository contains the backend implementation built with Java and Spring Boot. See `src/` for source code and the `backend` module for service configuration.
 
-## Package structure
-
-Code is organized by features under the root package `com.zherikhov.planningpoker`:
-
-```
-shared/    # configuration, security, utilities
-auth/      # authentication controllers and services
-users/     # user entities and repositories
-boards/    # room management
-tasks/     # planning tasks
-voting/    # voting sessions
-events/    # audit log
-integration/ # external integrations
-```
-
-Each feature contains `api`, `impl`, `web`, and `persistence` subpackages. Web layers depend only on their feature API; implementations are package-private and rely on the API and shared utilities.
-
 ## Authentication
 
 - `POST /api/auth/login` issues an access token and optional refresh cookie.
