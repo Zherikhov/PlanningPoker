@@ -1,4 +1,4 @@
-package com.zherikhov.planningpoker.api.auth;
+package com.zherikhov.planningpoker.application.auth;
 
 public class EmailAlreadyExistsException extends RuntimeException {
     public EmailAlreadyExistsException(String email) {

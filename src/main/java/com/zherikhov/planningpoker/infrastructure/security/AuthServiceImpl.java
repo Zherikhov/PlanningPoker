@@ -1,11 +1,9 @@
 package com.zherikhov.planningpoker.infrastructure.security;
 
-import com.zherikhov.planningpoker.api.auth.LoginRequest;
-import com.zherikhov.planningpoker.api.auth.LoginResponse;
-import com.zherikhov.planningpoker.api.auth.UserResponse;
+import com.zherikhov.planningpoker.application.auth.LoginRequest;
+import com.zherikhov.planningpoker.application.auth.LoginResponse;
+import com.zherikhov.planningpoker.application.auth.UserResponse;
 import com.zherikhov.planningpoker.application.auth.AuthService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -27,17 +25,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Optional<LoginResponse> login(LoginRequest request, HttpServletResponse response) {
+    public Optional<LoginResponse> login(LoginRequest request) {
         if (DEMO_EMAIL.equals(request.email()) && DEMO_PASSWORD.equals(request.password())) {
             String token = jwtProvider.generateToken(DEMO_USER.id().toString());
-            if (request.rememberMe()) {
-                Cookie cookie = new Cookie("refreshToken", token);
-                cookie.setHttpOnly(true);
-                cookie.setSecure(true);
-                cookie.setPath("/api/auth/refresh");
-                cookie.setMaxAge(2592000); // 30 days
-                response.addCookie(cookie);
-            }
             return Optional.of(new LoginResponse(token, 3600, DEMO_USER));
         }
         return Optional.empty();

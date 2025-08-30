@@ -1,7 +1,7 @@
 package com.zherikhov.planningpoker.api.auth;
 
-import com.zherikhov.planningpoker.api.auth.EmailAlreadyExistsException;
-import com.zherikhov.planningpoker.api.auth.UserResponse;
+import com.zherikhov.planningpoker.application.auth.EmailAlreadyExistsException;
+import com.zherikhov.planningpoker.application.auth.UserResponse;
 import com.zherikhov.planningpoker.application.auth.AuthService;
 import com.zherikhov.planningpoker.application.auth.RegistrationService;
 import org.junit.jupiter.api.Test;
