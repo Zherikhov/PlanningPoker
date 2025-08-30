@@ -1,8 +1,7 @@
 package com.zherikhov.planningpoker.application.auth;
 
-import com.zherikhov.planningpoker.api.auth.EmailAlreadyExistsException;
-import com.zherikhov.planningpoker.api.auth.RegisterRequest;
-import com.zherikhov.planningpoker.api.auth.UserResponse;
+import com.zherikhov.planningpoker.domain.user.Role;
+import com.zherikhov.planningpoker.domain.user.User;
 import com.zherikhov.planningpoker.infrastructure.persistence.entity.AppUserEntity;
 import com.zherikhov.planningpoker.infrastructure.persistence.dao.AppUserJpaRepository;
 import org.junit.jupiter.api.Test;
@@ -34,10 +33,11 @@ class RegistrationServiceTest {
         saved.setUpdatedAt(saved.getCreatedAt());
         when(repository.save(captor.capture())).thenReturn(saved);
 
-        UserResponse res = service.register(new RegisterRequest("new@example.com", "Secret123", "Vlad"));
+        User res = service.register(new RegisterUser("new@example.com", "Secret123", "Vlad"));
 
         assertEquals("new@example.com", res.email());
         assertEquals("Vlad", res.displayName());
+        assertEquals(Role.USER, res.role());
         AppUserEntity toSave = captor.getValue();
         assertEquals("USER", toSave.getRole());
         assertTrue(toSave.getPasswordHash() != null && !toSave.getPasswordHash().equals("Secret123"));
@@ -47,7 +47,7 @@ class RegistrationServiceTest {
     void register_duplicateEmail() {
         when(repository.existsByEmailIgnoreCase("user@example.com")).thenReturn(true);
         assertThrows(EmailAlreadyExistsException.class,
-                () -> service.register(new RegisterRequest("user@example.com", "Secret123", "Vlad")));
+                () -> service.register(new RegisterUser("user@example.com", "Secret123", "Vlad")));
         verify(repository, never()).save(any());
     }
 }

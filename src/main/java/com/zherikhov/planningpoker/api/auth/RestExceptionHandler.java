@@ -1,5 +1,6 @@
 package com.zherikhov.planningpoker.api.auth;
 
+import com.zherikhov.planningpoker.application.auth.EmailAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

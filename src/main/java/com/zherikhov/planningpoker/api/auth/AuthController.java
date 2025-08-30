@@ -1,9 +1,11 @@
 package com.zherikhov.planningpoker.api.auth;
 
 import com.zherikhov.planningpoker.infrastructure.security.JwtProvider;
+import com.zherikhov.planningpoker.application.auth.RegisterUser;
 import com.zherikhov.planningpoker.application.auth.RegistrationService;
 import com.zherikhov.planningpoker.api.auth.UserResponse;
 import com.zherikhov.planningpoker.api.auth.RegisterRequest;
+import com.zherikhov.planningpoker.domain.user.User;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -59,8 +61,10 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
-        UserResponse user = registrationService.register(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        RegisterUser command = new RegisterUser(request.email(), request.password(), request.displayName());
+        User user = registrationService.register(command);
+        UserResponse response = new UserResponse(user.id(), user.email(), user.displayName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/refresh")

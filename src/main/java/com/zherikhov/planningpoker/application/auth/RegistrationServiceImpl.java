@@ -1,8 +1,7 @@
 package com.zherikhov.planningpoker.application.auth;
 
-import com.zherikhov.planningpoker.api.auth.EmailAlreadyExistsException;
-import com.zherikhov.planningpoker.api.auth.RegisterRequest;
-import com.zherikhov.planningpoker.api.auth.UserResponse;
+import com.zherikhov.planningpoker.domain.user.Role;
+import com.zherikhov.planningpoker.domain.user.User;
 import com.zherikhov.planningpoker.infrastructure.persistence.entity.AppUserEntity;
 import com.zherikhov.planningpoker.infrastructure.persistence.dao.AppUserJpaRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,7 +23,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional
-    public UserResponse register(RegisterRequest req) {
+    public User register(RegisterUser req) {
         String email = req.email().trim().toLowerCase();
         String displayName = req.displayName().trim();
         if (repository.existsByEmailIgnoreCase(email)) {
@@ -41,6 +40,6 @@ public class RegistrationServiceImpl implements RegistrationService {
         entity.setCreatedAt(now);
         entity.setUpdatedAt(now);
         AppUserEntity saved = repository.save(entity);
-        return new UserResponse(UUID.fromString(saved.getId()), saved.getEmail(), saved.getDisplayName());
+        return new User(UUID.fromString(saved.getId()), saved.getEmail(), saved.getDisplayName(), Role.valueOf(saved.getRole()));
     }
 }

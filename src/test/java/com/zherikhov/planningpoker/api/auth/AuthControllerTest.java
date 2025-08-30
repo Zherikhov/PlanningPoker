@@ -1,8 +1,9 @@
 package com.zherikhov.planningpoker.api.auth;
 
-import com.zherikhov.planningpoker.api.auth.EmailAlreadyExistsException;
-import com.zherikhov.planningpoker.api.auth.UserResponse;
+import com.zherikhov.planningpoker.application.auth.EmailAlreadyExistsException;
 import com.zherikhov.planningpoker.application.auth.RegistrationService;
+import com.zherikhov.planningpoker.domain.user.Role;
+import com.zherikhov.planningpoker.domain.user.User;
 import com.zherikhov.planningpoker.infrastructure.security.JwtProvider;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -35,7 +36,7 @@ class AuthControllerTest {
 
     @Test
     void register_ReturnsCreatedUser() throws Exception {
-        when(registrationService.register(any())).thenReturn(new UserResponse(UUID.randomUUID(), "new@example.com", "Vlad"));
+        when(registrationService.register(any())).thenReturn(new User(UUID.randomUUID(), "new@example.com", "Vlad", Role.USER));
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
