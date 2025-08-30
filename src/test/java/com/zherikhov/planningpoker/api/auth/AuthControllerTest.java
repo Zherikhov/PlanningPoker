@@ -2,8 +2,8 @@ package com.zherikhov.planningpoker.api.auth;
 
 import com.zherikhov.planningpoker.api.auth.EmailAlreadyExistsException;
 import com.zherikhov.planningpoker.api.auth.UserResponse;
+import com.zherikhov.planningpoker.application.auth.AuthService;
 import com.zherikhov.planningpoker.application.auth.RegistrationService;
-import com.zherikhov.planningpoker.infrastructure.security.JwtProvider;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ class AuthControllerTest {
     private RegistrationService registrationService;
 
     @MockBean
-    private JwtProvider jwtProvider;
+    private AuthService authService;
 
     @Test
     void register_ReturnsCreatedUser() throws Exception {

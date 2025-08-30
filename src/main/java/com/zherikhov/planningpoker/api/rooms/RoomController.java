@@ -1,8 +1,8 @@
 package com.zherikhov.planningpoker.api.rooms;
 
 import com.zherikhov.planningpoker.application.rooms.CreateRoomService;
+import com.zherikhov.planningpoker.application.rooms.RoomQueryService;
 import com.zherikhov.planningpoker.domain.rooms.Room;
-import com.zherikhov.planningpoker.infrastructure.persistence.service.RoomService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +21,11 @@ import java.util.List;
 public class RoomController {
 
     private final CreateRoomService createRoomService;
-    private final RoomService roomService;
+    private final RoomQueryService roomQueryService;
 
-    public RoomController(CreateRoomService createRoomService, RoomService roomService) {
+    public RoomController(CreateRoomService createRoomService, RoomQueryService roomQueryService) {
         this.createRoomService = createRoomService;
-        this.roomService = roomService;
+        this.roomQueryService = roomQueryService;
     }
 
     @PostMapping
@@ -37,8 +37,8 @@ public class RoomController {
 
     @GetMapping
     public ResponseEntity<List<RoomDto>> getRooms() {
-        List<RoomDto> rooms = roomService.findAll().stream()
-                .map(e -> new RoomDto(e.getId(), e.getName(), e.getStatus()))
+        List<RoomDto> rooms = roomQueryService.findAll().stream()
+                .map(e -> new RoomDto(e.id().value(), e.name(), e.status().name()))
                 .toList();
         return ResponseEntity.ok(rooms);
     }

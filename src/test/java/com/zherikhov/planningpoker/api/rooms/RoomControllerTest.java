@@ -1,11 +1,10 @@
 package com.zherikhov.planningpoker.api.rooms;
 
 import com.zherikhov.planningpoker.application.rooms.CreateRoomService;
+import com.zherikhov.planningpoker.application.rooms.RoomQueryService;
 import com.zherikhov.planningpoker.domain.rooms.Room;
 import com.zherikhov.planningpoker.domain.rooms.RoomId;
 import com.zherikhov.planningpoker.domain.rooms.RoomStatus;
-import com.zherikhov.planningpoker.infrastructure.persistence.entity.RoomEntity;
-import com.zherikhov.planningpoker.infrastructure.persistence.service.RoomService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -30,7 +29,7 @@ class RoomControllerTest {
     private CreateRoomService createRoomService;
 
     @MockBean
-    private RoomService roomService;
+    private RoomQueryService roomQueryService;
 
     @Test
     void createRoom_ReturnsCreatedRoom() throws Exception {
@@ -56,8 +55,8 @@ class RoomControllerTest {
 
     @Test
     void getRooms_ReturnsListOfRooms() throws Exception {
-        RoomEntity entity = new RoomEntity("id1", "Room1", "OPEN");
-        when(roomService.findAll()).thenReturn(List.of(entity));
+        Room room = new Room(new RoomId("id1"), "Room1", RoomStatus.OPEN);
+        when(roomQueryService.findAll()).thenReturn(List.of(room));
 
         mockMvc.perform(get("/api/rooms"))
                 .andExpect(status().isOk())
