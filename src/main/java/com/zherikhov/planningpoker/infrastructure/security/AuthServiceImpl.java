@@ -1,9 +1,12 @@
 package com.zherikhov.planningpoker.infrastructure.security;
 
+import com.zherikhov.planningpoker.application.auth.AuthService;
 import com.zherikhov.planningpoker.application.auth.LoginRequest;
 import com.zherikhov.planningpoker.application.auth.LoginResponse;
 import com.zherikhov.planningpoker.application.auth.UserResponse;
-import com.zherikhov.planningpoker.application.auth.AuthService;
+import com.zherikhov.planningpoker.infrastructure.persistence.dao.AppUserJpaRepository;
+import com.zherikhov.planningpoker.infrastructure.persistence.entity.AppUserEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -14,23 +17,28 @@ import java.util.UUID;
 public class AuthServiceImpl implements AuthService {
 
     private final JwtProvider jwtProvider;
+    private final AppUserJpaRepository repository;
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    private static final String DEMO_EMAIL = "user@example.com";
-    private static final String DEMO_PASSWORD = "secret";
-    private static final UserResponse DEMO_USER = new UserResponse(
-            UUID.fromString("00000000-0000-0000-0000-000000000001"), DEMO_EMAIL, "Demo User");
-
-    public AuthServiceImpl(JwtProvider jwtProvider) {
+    public AuthServiceImpl(JwtProvider jwtProvider, AppUserJpaRepository repository) {
         this.jwtProvider = jwtProvider;
+        this.repository = repository;
     }
 
     @Override
     public Optional<LoginResponse> login(LoginRequest request) {
-        if (DEMO_EMAIL.equals(request.email()) && DEMO_PASSWORD.equals(request.password())) {
-            String token = jwtProvider.generateToken(DEMO_USER.id().toString());
-            return Optional.of(new LoginResponse(token, 3600, DEMO_USER));
+        String email = request.email().trim().toLowerCase();
+        Optional<AppUserEntity> userOpt = repository.findByEmailIgnoreCase(email);
+        if (userOpt.isEmpty()) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        AppUserEntity user = userOpt.get();
+        if (!encoder.matches(request.password(), user.getPasswordHash())) {
+            return Optional.empty();
+        }
+        String token = jwtProvider.generateToken(user.getId());
+        UserResponse u = new UserResponse(UUID.fromString(user.getId()), user.getEmail(), user.getDisplayName());
+        return Optional.of(new LoginResponse(token, 3600, u));
     }
 
     @Override
@@ -38,8 +46,13 @@ public class AuthServiceImpl implements AuthService {
         if (refreshToken == null) {
             return Optional.empty();
         }
-        String token = jwtProvider.generateToken(DEMO_USER.id().toString());
-        return Optional.of(Map.of("accessToken", token, "expiresIn", 3600));
+        try {
+            String userId = jwtProvider.getSubject(refreshToken);
+            String token = jwtProvider.generateToken(userId);
+            return Optional.of(Map.of("accessToken", token, "expiresIn", 3600));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -49,8 +62,9 @@ public class AuthServiceImpl implements AuthService {
         }
         String token = authHeader.substring(7);
         try {
-            jwtProvider.getSubject(token);
-            return Optional.of(DEMO_USER);
+            String userId = jwtProvider.getSubject(token);
+            return repository.findById(userId)
+                    .map(u -> new UserResponse(UUID.fromString(u.getId()), u.getEmail(), u.getDisplayName()));
         } catch (Exception e) {
             return Optional.empty();
         }
