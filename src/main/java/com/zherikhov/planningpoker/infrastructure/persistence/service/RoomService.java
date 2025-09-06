@@ -21,15 +21,15 @@ public class RoomService implements RoomRepository, RoomQueryService {
 
     @Override
     public Room save(Room room) {
-        RoomEntity entity = new RoomEntity(room.id().value(), room.name(), room.status().name());
+        RoomEntity entity = new RoomEntity(room.id().value(), room.name(), room.description(), room.status().name());
         RoomEntity saved = repository.save(entity);
-        return new Room(new RoomId(saved.getId()), saved.getName(), RoomStatus.valueOf(saved.getStatus()));
+        return new Room(new RoomId(saved.getId()), saved.getName(), saved.getDescription(), RoomStatus.valueOf(saved.getStatus()));
     }
 
     @Override
     public List<Room> findAll() {
         return repository.findAll().stream()
-                .map(e -> new Room(new RoomId(e.getId()), e.getName(), RoomStatus.valueOf(e.getStatus())))
+                .map(e -> new Room(new RoomId(e.getId()), e.getName(), e.getDescription(), RoomStatus.valueOf(e.getStatus())))
                 .toList();
     }
 }

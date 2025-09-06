@@ -13,14 +13,17 @@ public class RoomEntity {
 
     private String name;
 
+    private String description;
+
     private String status;
 
     public RoomEntity() {
     }
 
-    public RoomEntity(String id, String name, String status) {
+    public RoomEntity(String id, String name, String description, String status) {
         this.id = id;
         this.name = name;
+        this.description = description;
         this.status = status;
     }
 
@@ -38,6 +41,14 @@ public class RoomEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getStatus() {

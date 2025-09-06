@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Size;
 public record RoomDto(
         String id,
         @NotBlank @Size(min = 1, max = 80) String name,
+        @Size(max = 255) String description,
         String status
 ) {
 }
