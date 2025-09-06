@@ -30,15 +30,15 @@ public class RoomController {
 
     @PostMapping
     public ResponseEntity<RoomDto> createRoom(@Valid @RequestBody RoomDto request) {
-        Room room = createRoomService.createRoom(request.name());
+        Room room = createRoomService.createRoom(request.name(), request.description());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new RoomDto(room.id().value(), room.name(), room.status().name()));
+                .body(new RoomDto(room.id().value(), room.name(), room.description(), room.status().name()));
     }
 
     @GetMapping
     public ResponseEntity<List<RoomDto>> getRooms() {
         List<RoomDto> rooms = roomQueryService.findAll().stream()
-                .map(e -> new RoomDto(e.id().value(), e.name(), e.status().name()))
+                .map(e -> new RoomDto(e.id().value(), e.name(), e.description(), e.status().name()))
                 .toList();
         return ResponseEntity.ok(rooms);
     }

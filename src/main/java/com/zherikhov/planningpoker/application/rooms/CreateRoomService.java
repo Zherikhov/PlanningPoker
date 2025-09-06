@@ -17,8 +17,8 @@ public class CreateRoomService {
         this.roomRepository = roomRepository;
     }
 
-    public Room createRoom(String name) {
-        Room room = new Room(new RoomId(UUID.randomUUID().toString()), name, RoomStatus.OPEN);
+    public Room createRoom(String name, String description) {
+        Room room = new Room(new RoomId(UUID.randomUUID().toString()), name, description, RoomStatus.OPEN);
         return roomRepository.save(room);
     }
 }

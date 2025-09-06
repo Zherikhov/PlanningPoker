@@ -33,15 +33,16 @@ class RoomControllerTest {
 
     @Test
     void createRoom_ReturnsCreatedRoom() throws Exception {
-        Room room = new Room(new RoomId("id1"), "Test room", RoomStatus.OPEN);
-        when(createRoomService.createRoom("Test room")).thenReturn(room);
+        Room room = new Room(new RoomId("id1"), "Test room", "Desc", RoomStatus.OPEN);
+        when(createRoomService.createRoom("Test room", "Desc")).thenReturn(room);
 
         mockMvc.perform(post("/api/rooms")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"Test room\"}"))
+                        .content("{\"name\":\"Test room\",\"description\":\"Desc\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value("id1"))
                 .andExpect(jsonPath("$.name").value("Test room"))
+                .andExpect(jsonPath("$.description").value("Desc"))
                 .andExpect(jsonPath("$.status").value("OPEN"));
     }
 
@@ -55,13 +56,14 @@ class RoomControllerTest {
 
     @Test
     void getRooms_ReturnsListOfRooms() throws Exception {
-        Room room = new Room(new RoomId("id1"), "Room1", RoomStatus.OPEN);
+        Room room = new Room(new RoomId("id1"), "Room1", "Desc1", RoomStatus.OPEN);
         when(roomQueryService.findAll()).thenReturn(List.of(room));
 
         mockMvc.perform(get("/api/rooms"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value("id1"))
                 .andExpect(jsonPath("$[0].name").value("Room1"))
+                .andExpect(jsonPath("$[0].description").value("Desc1"))
                 .andExpect(jsonPath("$[0].status").value("OPEN"));
     }
 }

@@ -6,11 +6,13 @@ public class Room {
 
     private final RoomId id;
     private final String name;
+    private final String description;
     private final RoomStatus status;
 
-    public Room(RoomId id, String name, RoomStatus status) {
+    public Room(RoomId id, String name, String description, RoomStatus status) {
         this.id = id;
         this.name = name;
+        this.description = description;
         this.status = status;
     }
 
@@ -20,6 +22,10 @@ public class Room {
 
     public String name() {
         return name;
+    }
+
+    public String description() {
+        return description;
     }
 
     public RoomStatus status() {
