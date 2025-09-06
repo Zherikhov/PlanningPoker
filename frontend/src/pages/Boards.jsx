@@ -40,32 +40,32 @@ export default function Boards({ api = { fetchBoards, createBoard } }) {
   }
 
   return (
-    <div className="p-4">
-      <header className="flex justify-between items-center mb-4">
-        <h1 className="text-xl">Boards</h1>
+    <div className="p-6 space-y-6">
+      <header className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Boards</h1>
         <button
           onClick={() => setShow(true)}
-          className="bg-blue-600 text-white px-3 py-1 rounded"
+          className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md"
         >
-          New board
+          Create board
         </button>
       </header>
 
-      {status === 'loading' && <p>Loading...</p>}
+      {status === 'loading' && <p className="text-gray-400">Loading...</p>}
       {status === 'error' && <p className="text-red-500">Failed to load boards</p>}
       {status === 'empty' && (
-        <div className="text-center space-y-2">
-          <p>No boards yet</p>
+        <div className="text-center py-10 space-y-4">
+          <p className="text-gray-400">You don't have any boards yet.</p>
           <button
             onClick={() => setShow(true)}
-            className="bg-blue-600 text-white px-3 py-1 rounded"
+            className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md"
           >
-            New board
+            Create your first board
           </button>
         </div>
       )}
       {status === 'data' && (
-        <ul className="space-y-2">
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {boards.map(b => (
             <li key={b.id}>
               <a
@@ -74,11 +74,14 @@ export default function Boards({ api = { fetchBoards, createBoard } }) {
                   e.preventDefault()
                   navigate(`/boards/${b.id}`)
                 }}
-                className="block p-4 rounded bg-gray-800 hover:bg-gray-700"
+                className="block h-full p-5 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"
               >
-                <h2 className="text-lg">{b.name}</h2>
+                <h2 className="text-lg font-medium mb-1">{b.name}</h2>
                 {b.description && (
-                  <p className="text-sm opacity-75 overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                  <p
+                    className="text-sm text-gray-300 overflow-hidden"
+                    style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
+                  >
                     {b.description}
                   </p>
                 )}
@@ -89,30 +92,36 @@ export default function Boards({ api = { fetchBoards, createBoard } }) {
       )}
 
       {show && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
           <form
             onSubmit={submit}
-            className="bg-gray-800 p-4 rounded space-y-2 w-80"
+            className="bg-gray-800 rounded-lg p-6 w-full max-w-sm space-y-4"
           >
-            <h2 className="text-lg mb-2">New board</h2>
-            <input
-              className="w-full p-2 rounded bg-gray-700"
-              placeholder="Title"
-              value={form.name}
-              onChange={e => setForm({ ...form, name: e.target.value })}
-              required
-            />
-            <textarea
-              className="w-full p-2 rounded bg-gray-700"
-              placeholder="Description"
-              value={form.description}
-              onChange={e => setForm({ ...form, description: e.target.value })}
-            />
+            <h2 className="text-lg font-medium">Create board</h2>
+            <label className="block space-y-1">
+              <span className="text-sm">Title</span>
+              <input
+                className="w-full p-2 rounded bg-gray-700"
+                placeholder="Title"
+                value={form.name}
+                onChange={e => setForm({ ...form, name: e.target.value })}
+                required
+              />
+            </label>
+            <label className="block space-y-1">
+              <span className="text-sm">Description</span>
+              <textarea
+                className="w-full p-2 rounded bg-gray-700"
+                placeholder="Description"
+                value={form.description}
+                onChange={e => setForm({ ...form, description: e.target.value })}
+              />
+            </label>
             <div className="flex justify-end space-x-2 pt-2">
-              <button type="button" onClick={() => setShow(false)} className="px-3 py-1">
+              <button type="button" onClick={() => setShow(false)} className="px-4 py-2">
                 Cancel
               </button>
-              <button type="submit" className="bg-blue-600 px-3 py-1 rounded text-white">
+              <button type="submit" className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md">
                 Create
               </button>
             </div>
